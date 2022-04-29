@@ -13,9 +13,43 @@ const { NotImplementedError } = require('../extensions/index.js');
  * transform([1, 2, 3, '--discard-prev', 4, 5]) => [1, 2, 4, 5]
  * 
  */
-function transform(/* arr */) {
-  throw new NotImplementedError('Not implemented');
-  // remove line with error and write your code here
+ function transform(arr) {
+  if (!Array.isArray(arr))
+    throw new Error("'arr' parameter must be an instance of the Array!");
+
+  let transArr = [].concat(arr);
+  let discardInd;
+
+  transArr.forEach((el, ind, array) => {
+    switch (el) {
+      case "--discard-next":
+        if(ind + 1 < array.length) {
+          transArr.splice(ind+1, 1, 'heh')
+          transArr.splice(ind, 1);
+        } else {
+          transArr.splice(ind, 1);
+        }
+       discardInd = ind;
+        break;
+      case "--discard-prev":
+(ind-1 > 0 && ind-1 !== discardInd) ? transArr.splice(ind - 1, 2) : transArr.splice(ind, 1);
+        break;
+      case "--double-next":
+        ind + 1 < array.length
+          ? transArr.splice(ind, 1, array[ind + 1])
+          : transArr.splice(ind, 1);
+        break;
+      case "--double-prev":
+(ind-1 > 0 && ind-1 !== discardInd)
+          ? transArr.splice(ind, 1, array[ind - 1])
+          : transArr.splice(ind, 1);
+        break;
+      default:
+        break;
+    }
+  });
+
+  return transArr.filter(el => !["heh"].includes(el));
 }
 
 module.exports = {
